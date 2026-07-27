@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест HR: Кадровое делопроизводство (КДП)</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface2: #243044;
+      --text: #e8edf4;
+      --muted: #8b9cb3;
+      --accent: #4f8cff;
+      --success: #2ecc71;
+      --error: #e74c3c;
+      --warning: #f39c12;
+      --key-a: #ff6b6b;
+      --key-b: #ffd93d;
+      --key-c: #6bcb77;
+      --key-d: #4d96ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 28px 20px;
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(79, 140, 255, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.7rem;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #4f8cff, #6bcb77);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p { color: var(--muted); font-size: 0.95rem; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Выбор темы */
+    .topic-select-intro {
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .topic-card {
+      background: var(--surface);
+      border: 2px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .topic-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(79, 140, 255, 0.15);
+    }
+
+    .topic-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+
+    .topic-card h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .topic-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .topic-card-meta {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Прогресс */
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .quiz-header .topic-name {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-back {
+      padding: 8px 16px;
+      background: var(--surface2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover { color: var(--text); }
+
+    .progress-wrap { margin-bottom: 20px; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .keyboard-hint {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: var(--surface);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .keys-demo {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .question-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: border-color 0.3s;
+    }
+
+    .question-card.answered-correct { border-color: rgba(46, 204, 113, 0.4); }
+    .question-card.answered-wrong { border-color: rgba(231, 76, 60, 0.4); }
+
+    .q-number {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .q-text {
+      font-size: 1rem;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border-radius: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .option:hover:not(.disabled) {
+      background: #2d3d54;
+      transform: translateX(4px);
+    }
+
+    .option.selected { border-color: var(--accent); }
+    .option.correct { border-color: var(--success); background: rgba(46,204,113,0.12); }
+    .option.wrong { border-color: var(--error); background: rgba(231,76,60,0.12); }
+    .option.disabled { cursor: default; }
+
+    .key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+      color: #1a1a1a;
+    }
+
+    .key-a { background: linear-gradient(180deg, #ff8a8a 0%, var(--key-a) 100%); }
+    .key-b { background: linear-gradient(180deg, #ffe566 0%, var(--key-b) 100%); }
+    .key-c { background: linear-gradient(180deg, #8ee99a 0%, var(--key-c) 100%); }
+    .key-d { background: linear-gradient(180deg, #7eb8ff 0%, var(--key-d) 100%); }
+
+    .option-text { font-size: 0.92rem; padding-top: 4px; }
+
+    .explanation {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(79, 140, 255, 0.1);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: none;
+    }
+
+    .explanation.show { display: block; }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    button {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    button:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #3a6fd9);
+      color: white;
+      box-shadow: 0 4px 16px rgba(79, 140, 255, 0.35);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Итоговый результат */
+    .results {
+      text-align: center;
+      padding: 36px 24px;
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .score-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 6px solid var(--accent);
+    }
+
+    .score-circle .pct { font-size: 2.4rem; font-weight: 700; line-height: 1; }
+    .score-circle .fraction { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+    .score-circle.excellent { border-color: var(--success); color: var(--success); }
+    .score-circle.good { border-color: var(--accent); color: var(--accent); }
+    .score-circle.weak { border-color: var(--warning); color: var(--warning); }
+    .score-circle.fail { border-color: var(--error); color: var(--error); }
+
+    .results h2 { margin-bottom: 8px; font-size: 1.4rem; }
+    .results .desc { color: var(--muted); margin-bottom: 24px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+    .result-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .result-detail-item {
+      padding: 14px;
+      background: var(--surface2);
+      border-radius: 10px;
+    }
+
+    .result-detail-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+    .result-detail-item .value { font-size: 1.1rem; font-weight: 600; }
+
+    .wrong-list {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .wrong-list h3 {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      color: var(--error);
+    }
+
+    .wrong-item {
+      padding: 12px;
+      background: rgba(231,76,60,0.08);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      border-left: 3px solid var(--error);
+    }
+
+    .wrong-item .correct-ans {
+      margin-top: 6px;
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.35rem; }
+      .topics-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Тестирование знаний HR-специалиста</h1>
+      <p>Кадровое делопроизводство (КДП): выберите тему и пройдите тест из 10 вопросов</p>
+    </header>
+
+    <!-- Экран выбора темы -->
+    <div class="screen active" id="screenSelect">
+      <p class="topic-select-intro">Выберите тему для проверки знаний. В каждой теме — 10 вопросов с вариантами ответов.</p>
+      <div class="topics-grid" id="topicsGrid"></div>
+    </div>
+
+    <!-- Экран теста -->
+    <div class="screen" id="screenQuiz">
+      <div class="quiz-header">
+        <div class="topic-name"><span id="quizIcon"></span> <span id="quizTopicName"></span></div>
+        <button class="btn-back" id="backToTopics">← К выбору темы</button>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="progressText">Отвечено: 0 из 10</span>
+          <span id="scoreText">Верно: 0</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="keyboard-hint">
+        Клавиши для ответа:
+        <div class="keys-demo">
+          <span class="key key-a">A</span>
+          <span class="key key-b">B</span>
+          <span class="key key-c">C</span>
+          <span class="key key-d">D</span>
+        </div>
+      </div>
+      <div id="quizQuestions"></div>
+      <div class="actions">
+        <button class="btn-primary" id="finishBtn" disabled>Завершить и показать результат</button>
+      </div>
+    </div>
+
+    <!-- Экран результата -->
+    <div class="screen" id="screenResult">
+      <div class="results">
+        <div class="score-circle" id="scoreCircle">
+          <span class="pct" id="scorePct">0%</span>
+          <span class="fraction" id="scoreFraction">0 / 10</span>
+        </div>
+        <h2 id="resultTitle">Результат</h2>
+        <p class="desc" id="resultDesc"></p>
+        <div class="result-details" id="resultDetails"></div>
+        <div class="wrong-list" id="wrongList"></div>
+        <div class="actions">
+          <button class="btn-primary" id="retryTopic">Пройти эту тему снова</button>
+          <button class="btn-secondary" id="chooseTopic">Выбрать другую тему</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sections = [
+      {
+        id: "hire",
+        icon: "📋",
+        color: "#4f8cff",
+        title: "Приём на работу",
+        desc: "Документы, сроки, форма Т-1, обязанности работодателя",
+        questions: [
+          { text: "В какой срок работодатель обязан оформить трудовой договор при фактическом допущении к работе?", options: ["1 рабочий день", "Не позднее 3 рабочих дней", "5 рабочих дней", "2 недели"], correct: 1, explanation: "Ст. 67 ТК РФ: не позднее 3 рабочих дней со дня фактического допущения." },
+          { text: "Какие документы работодатель обязан запросить при приёме (общий случай)?", options: ["Только паспорт", "Паспорт, СНИЛС, документы об образовании, сведения о трудовой деятельности, военный билет (военнообязанные)", "Только трудовую книжку", "Справку о несудимости — всегда"], correct: 1, explanation: "Ст. 65 ТК РФ перечисляет обязательные документы для приёма." },
+          { text: "Какая форма используется для приказа о приёме одного работника?", options: ["Т-2", "Т-1", "Т-8", "Т-6"], correct: 1, explanation: "Приказ о приёме — форма № Т-1 (один работник) или Т-1а (несколько)." },
+          { text: "Обязан ли работодатель знакомить работника с правилами внутреннего трудового распорядка?", options: ["Нет", "Да, при приёме на работу под подпись", "Только по запросу", "Только для руководителей"], correct: 1, explanation: "Ст. 68 ТК РФ: при приёме работник знакомится с ПВТР, локальными актами под подпись." },
+          { text: "Может ли работодатель требовать документы, не предусмотренные ст. 65 ТК РФ?", options: ["Да, любые", "Нет, кроме случаев, прямо предусмотренных законом", "Да, если указано в договоре", "Только справку 2-НДФЛ"], correct: 1, explanation: "Ст. 65 ТК РФ: запрещено требовать документы, не предусмотренные законом." },
+          { text: "Какой документ оформляется на каждого работника с основными кадровыми данными?", options: ["Форма Т-1", "Личная карточка (форма Т-2)", "Форма Т-54", "Табель Т-12"], correct: 1, explanation: "Личная карточка работника — форма № Т-2." },
+          { text: "С какого момента начинается трудовой стаж при приёме?", options: ["С даты подписания договора", "С даты фактического допущения к работе", "С даты приказа", "С первой выплаты зарплаты"], correct: 1, explanation: "Ст. 66.1 ТК РФ: стаж исчисляется с даты заключения договора; фактическое допущение — начало работы." },
+          { text: "Обязателен ли медосмотр при приёме?", options: ["Для всех без исключения", "Только для отдельных категорий (вредные условия, пищевая промышленность и т.д.)", "Никогда", "Только для женщин"], correct: 1, explanation: "Предварительный медосмотр обязателен для ряда категорий (ст. 69 ТК РФ, отраслевые перечни)." },
+          { text: "Когда работодатель обязан создать рабочее место для инвалида?", options: ["Никогда", "При квотировании рабочих мест (если применимо к организации)", "Только в госсекторе", "Всегда для любого инвалида"], correct: 1, explanation: "Ст. 21 ТК РФ: работодатели с численностью от 100 чел. обязаны устанавливать квоты для инвалидов." },
+          { text: "Должен ли работник быть ознакомлен с должностной инструкцией?", options: ["Не обязательно", "Да, при приёме под подпись (если инструкция применяется)", "Только через месяц", "Только устно"], correct: 1, explanation: "Ознакомление с должностной инструкцией — стандартная кадровая процедура при приёме." }
+        ]
+      },
+      {
+        id: "contract",
+        icon: "📄",
+        color: "#6bcb77",
+        title: "Трудовой договор",
+        desc: "Сроки, испытание, виды договоров, обязательные условия",
+        questions: [
+          { text: "В какой срок выдаётся экземпляр подписанного трудового договора?", options: ["В день подписания", "Не позднее 3 рабочих дней с допуска к работе", "В течение месяца", "При первой зарплате"], correct: 1, explanation: "Ст. 67 ТК РФ." },
+          { text: "Максимальный срок испытания для рядового работника?", options: ["1 месяц", "3 месяца", "6 месяцев", "2 недели"], correct: 1, explanation: "Ст. 70 ТК РФ: не более 3 месяцев (руководители — до 6)." },
+          { text: "Какой срок срочного договора допустим при замене временно отсутствующего?", options: ["На срок отсутствия работника", "Не более 1 года", "Не более 5 лет", "Только 3 месяца"], correct: 0, explanation: "Ст. 59 ТК РФ: срочный договор на время замены отсутствующего работника." },
+          { text: "Какие условия обязательны в трудовом договоре?", options: ["Только оклад", "Место работы, трудовая функция, дата начала, условия оплаты, режим труда и отдыха", "Только график", "Только должность"], correct: 1, explanation: "Ст. 57 ТК РФ перечисляет обязательные условия договора." },
+          { text: "Можно ли заключить договор ГПХ с работником на постоянную должность?", options: ["Да", "Нет, это признаки трудовых отношений (ст. 15, 19.1 ТК РФ)", "Да, если работник согласен", "Только для ИП"], correct: 1, explanation: "Фактические трудовые отношения оформляются трудовым договором." },
+          { text: "Срок договора с иностранным работником (общий случай)?", options: ["Бессрочный всегда", "На срок действия разрешения на работу / патента", "1 год", "5 лет"], correct: 1, explanation: "Ст. 58, 337.2 ТК РФ: срок привязан к документам на право работы." },
+          { text: "Может ли испытание быть установлено беременной работнице?", options: ["Да", "Нет", "Только 1 месяц", "По соглашению"], correct: 1, explanation: "Ст. 70 ТК РФ: испытание не устанавливается для беременных, несовершеннолетних и др." },
+          { text: "Как оформляется изменение условий договора по соглашению сторон?", options: ["Устно", "Дополнительное соглашение в письменной форме", "Только приказ", "По e-mail"], correct: 1, explanation: "Ст. 72 ТК РФ: изменения — доп. соглашение в письменной форме." },
+          { text: "Срок уведомления работника об изменении условий по ст. 74 ТК РФ?", options: ["7 дней", "Не менее 2 месяцев", "14 дней", "3 дня"], correct: 1, explanation: "Ст. 74 ТК РФ: предупреждение не менее чем за 2 месяца." },
+          { text: "Допускается ли дистанционная работа по соглашению?", options: ["Нет", "Да, оформляется договором или доп. соглашением (гл. 49.1 ТК РФ)", "Только для IT", "Только временно"], correct: 1, explanation: "Гл. 49.1 ТК РФ регулирует дистанционный и надомный труд." }
+        ]
+      },
+      {
+        id: "orders",
+        icon: "📝",
+        color: "#ffd93d",
+        title: "Кадровые приказы",
+        desc: "Формы приказов, ознакомление, перевод, поощрения",
+        questions: [
+          { text: "Какая форма для приказа о переводе?", options: ["Т-1", "Т-5", "Т-8", "Т-11"], correct: 1, explanation: "Приказ о переводе — форма № Т-5." },
+          { text: "Какая форма для приказа об увольнении?", options: ["Т-6", "Т-8", "Т-1", "Т-2"], correct: 1, explanation: "Приказ об увольнении — форма № Т-8." },
+          { text: "Какая форма для приказа об отпуске?", options: ["Т-6", "Т-8", "Т-5", "Т-11"], correct: 0, explanation: "Приказ о предоставлении отпуска — форма № Т-6." },
+          { text: "Какая форма для приказа о поощрении?", options: ["Т-11", "Т-8", "Т-1", "Т-54"], correct: 0, explanation: "Приказ о поощрении — форма № Т-11." },
+          { text: "Обязательно ли ознакомление работника с приказом под подпись?", options: ["Нет", "Да, если приказ затрагивает его права и обязанности", "Только устно", "Только для увольнения"], correct: 1, explanation: "Ст. 22, 84.1 ТК РФ: работник вправе ознакомиться с документами, касающимися его работы." },
+          { text: "Когда оформляется перевод на другую работу?", options: ["После месяца работы", "До начала работы на новой должности", "В любое время", "Не требует оформления"], correct: 1, explanation: "Ст. 72.1 ТК РФ: перевод оформляется до начала работы на новой должности." },
+          { text: "Какой документ нужен для временного перевода без согласия (ст. 72.2)?", options: ["Только устное распоряжение", "Приказ с указанием основания и срока", "Заявление работника", "Договор ГПХ"], correct: 1, explanation: "Временный перевод по ст. 72.2 оформляется приказом на срок до 1 месяца." },
+          { text: "Какая форма для приказа о наложении взыскания?", options: ["Т-11", "Т-13", "Т-8", "Т-6"], correct: 1, explanation: "Приказ о наложении взыскания — форма № Т-13." },
+          { text: "Может ли приказ вступить в силу без подписи работника об ознакомлении?", options: ["Нет, без ознакомления приказ недействителен", "Да, но отказ от ознакомления фиксируется актом", "Только для директора", "Да, всегда"], correct: 1, explanation: "При отказе от подписи составляется акт/справка о попытке ознакомления." },
+          { text: "Срок хранения приказов по личному составу?", options: ["5 лет", "10 лет", "75 лет", "1 год"], correct: 2, explanation: "Перечень Росархива: приказы по личному составу — 75 лет." }
+        ]
+      },
+      {
+        id: "vacation",
+        icon: "🏖️",
+        color: "#ff9f43",
+        title: "Отпуска",
+        desc: "График, сроки, виды отпусков, оформление",
+        questions: [
+          { text: "За сколько дней уведомляют о начале отпуска?", options: ["7 дней", "14 календарных дней", "3 рабочих дня", "1 месяц"], correct: 1, explanation: "Ст. 123 ТК РФ: не позднее чем за 2 недели." },
+          { text: "Минимальная продолжительность ежегодного отпуска?", options: ["24 дня", "28 календарных дней", "30 дней", "21 день"], correct: 1, explanation: "Ст. 115 ТК РФ: 28 календарных дней." },
+          { text: "До какого срока утверждают график отпусков?", options: ["1 марта", "За 2 недели до календарного года", "31 января", "По запросу"], correct: 1, explanation: "Ст. 123 ТК РФ." },
+          { text: "Можно ли заменить отпуск денежной компенсацией?", options: ["Всегда", "Только часть, превышающая 28 дней, или при увольнении", "Никогда", "Только для руководителей"], correct: 1, explanation: "Ст. 126 ТК РФ: компенсация — часть сверх 28 дней или при увольнении." },
+          { text: "Срок выплаты отпускных?", options: ["В день начала отпуска", "Не позднее чем за 3 дня до отпуска", "После отпуска", "С зарплатой"], correct: 1, explanation: "Ст. 136 ТК РФ: не позднее чем за 3 дня до начала отпуска." },
+          { text: "Форма приказа об отпуске?", options: ["Т-6", "Т-8", "Т-1", "Т-13"], correct: 0, explanation: "Форма № Т-6." },
+          { text: "Отпуск без сохранения зарплаты по семейным обстоятельствам (ст. 128)?", options: ["До 5 дней", "До 14 календарных дней по ТК, больше — по кол. договору", "30 дней", "Не предусмотрен"], correct: 1, explanation: "Ст. 128 ТК РФ: до 5 дней при рождении ребёнка и др.; по семейным — по кол. договору." },
+          { text: "Перенос отпуска по производственной необходимости — с согласия работника?", options: ["Не нужно", "Да, с письменного согласия (ст. 124)", "Только приказом", "Запрещено"], correct: 1, explanation: "Ст. 124 ТК РФ: перенос — с согласия работника, уведомление за 2 недели." },
+          { text: "Дополнительный отпуск за вредные условия — минимум?", options: ["7 дней", "Не менее 7 календарных дней (ст. 117)", "14 дней", "3 дня"], correct: 1, explanation: "Ст. 117 ТК РФ: не менее 7 календарных дней." },
+          { text: "Отпуск по уходу за ребёнком — до какого возраста?", options: ["1 год", "3 года (ст. 256)", "7 лет", "18 лет"], correct: 1, explanation: "Ст. 256 ТК РФ: до достижения ребёнком 3 лет." }
+        ]
+      },
+      {
+        id: "dismissal",
+        icon: "🚪",
+        color: "#c77dff",
+        title: "Увольнение",
+        desc: "Расчёт, документы, сроки, основания",
+        questions: [
+          { text: "Срок окончательного расчёта при увольнении?", options: ["В день увольнения", "3 рабочих дня", "Неделя", "Следующая зарплата"], correct: 0, explanation: "Ст. 140 ТК РФ: в день увольнения." },
+          { text: "Срок обращения в суд при незаконном увольнении?", options: ["1 месяц", "3 месяца", "6 месяцев", "1 год"], correct: 0, explanation: "Ст. 392 ТК РФ: 1 месяц с даты вручения приказа или выдачи трудовой книжки." },
+          { text: "Какие документы выдают при увольнении?", options: ["Только приказ", "Трудовая книжка/выписка СТД, справка о заработке для службы занятости", "Только 2-НДФЛ", "Характеристику — всегда"], correct: 1, explanation: "Ст. 84.1, 127, 289 ТК РФ." },
+          { text: "Срок предупреждения при увольнении по собственному желанию?", options: ["3 дня", "2 недели", "1 месяц", "2 месяца"], correct: 1, explanation: "Ст. 80 ТК РФ: 2 недели, если иное не установлено." },
+          { text: "Форма приказа об увольнении?", options: ["Т-8", "Т-1", "Т-6", "Т-5"], correct: 0, explanation: "Форма № Т-8." },
+          { text: "Компенсация за неиспользованный отпуск при увольнении?", options: ["Не выплачивается", "Выплачивается за все неиспользованные дни", "Только 14 дней", "Только по соглашению"], correct: 1, explanation: "Ст. 127 ТК РФ: денежная компенсация за все неиспользованные дни." },
+          { text: "Увольнение за прогул — какое основание?", options: ["п. 3 ч. 1 ст. 77", "п. 6 ч. 1 ст. 81", "п. 1 ч. 1 ст. 77", "п. 5 ч. 1 ст. 81"], correct: 1, explanation: "Прогул — п. 6 ч. 1 ст. 81 ТК РФ." },
+          { text: "Согласие профсоюза нужно при увольнении по п. 2 ч. 1 ст. 81 (сокращение)?", options: ["Нет", "Да, мнение профсоюза учитывается (ст. 82)", "Только в бюджетной сфере", "Не предусмотрено"], correct: 1, explanation: "Ст. 82 ТК РФ: учёт мнения профсоюза при увольнении." },
+          { text: "Срок предупреждения при сокращении?", options: ["2 недели", "2 месяца", "3 месяца", "1 месяц"], correct: 1, explanation: "Ст. 180 ТК РФ: предупреждение не менее чем за 2 месяца." },
+          { text: "Выходное пособие при сокращении (минимум)?", options: ["Нет", "Средний месячный заработок (ст. 178)", "2 оклада", "3 оклада"], correct: 1, explanation: "Ст. 178 ТК РФ: выходное пособие в размере среднего месячного заработка." }
+        ]
+      },
+      {
+        id: "workbook",
+        icon: "📕",
+        color: "#ff6b6b",
+        title: "Трудовые книжки и СТД",
+        desc: "Записи, сроки, электронные сведения",
+        questions: [
+          { text: "Срок внесения записи в трудовую книжку после приказа?", options: ["5 рабочих дней", "Следующий рабочий день", "3 рабочих дня", "Неделя"], correct: 1, explanation: "Ст. 66 ТК РФ: не позднее следующего рабочего дня." },
+          { text: "Срок выдачи трудовой книжки при увольнении?", options: ["В день увольнения", "3 рабочих дня", "5 дней", "2 недели"], correct: 0, explanation: "Ст. 84.1 ТК РФ: в день прекращения договора." },
+          { text: "С какого года можно не оформлять бумажные трудовые книжки?", options: ["2020", "2021", "2022", "2019"], correct: 1, explanation: "С 01.01.2021 — по выбору работодателя для новых работников." },
+          { text: "Срок передачи сведений в СТД после приказа?", options: ["3 рабочих дня", "Следующий рабочий день", "5 дней", "1 неделя"], correct: 1, explanation: "Ст. 84.1 ТК РФ: не позднее следующего рабочего дня." },
+          { text: "Что выдаётся работнику вместо трудовой книжки при электронном учёте?", options: ["Ничего", "Выписка из СТД по запросу", "Только справка", "Копия приказа"], correct: 1, explanation: "Ст. 84.1 ТК РФ: выписка из СТД или бумажная книжка." },
+          { text: "Кто ведёт СТД?", options: ["Работодатель", "СФР (ПФР)", "Работник сам", "ФНС"], correct: 1, explanation: "Сведения о трудовой деятельности ведёт СФР на основании данных работодателя." },
+          { text: "Исправления в трудовой книжке?", options: ["Зачёркиванием", "По правилам Инструкции (зачёркнуть, указать верное, «Исправленному верить»)", "Нельзя исправлять", "Любым способом"], correct: 1, explanation: "Постановление Правительства № 225: правила ведения и хранения." },
+          { text: "Запись об увольнении по какому основанию указывается?", options: ["Формулировка работодателя", "Формулировка ст. ТК РФ или иного акта", "По желанию работника", "«По собственному» всегда"], correct: 1, explanation: "Ст. 84.1, Правила: указывается основание по закону." },
+          { text: "Срок хранения трудовых книжек после увольнения?", options: ["5 лет", "50 лет", "75 лет", "10 лет"], correct: 1, explanation: "Перечень Росархива: 50 лет после увольнения." },
+          { text: "Обязан ли работодатель сообщать работнику о передаче сведений в СТД?", options: ["Нет", "Да, не позднее следующего рабочего дня (ст. 84.1)", "Раз в месяц", "Раз в год"], correct: 1, explanation: "Ст. 84.1 ТК РФ: уведомление работника." }
+        ]
+      },
+      {
+        id: "storage",
+        icon: "🗄️",
+        color: "#4d96ff",
+        title: "Хранение документов",
+        desc: "Сроки хранения кадровых документов по Перечню Росархива",
+        questions: [
+          { text: "Срок хранения личных карточек (Т-2)?", options: ["5 лет", "50 лет", "75 лет", "10 лет"], correct: 2, explanation: "Приказ Росархива № 236: 75 лет." },
+          { text: "Срок хранения трудовых договоров?", options: ["5 лет", "50 лет", "75 лет", "1 год"], correct: 2, explanation: "75 лет." },
+          { text: "Срок хранения приказов по личному составу?", options: ["5 лет", "10 лет", "75 лет", "Постоянно"], correct: 2, explanation: "75 лет." },
+          { text: "Срок хранения личных дел?", options: ["5 лет", "50 лет", "75 лет", "25 лет"], correct: 2, explanation: "75 лет." },
+          { text: "Срок хранения документов по дисциплинарным взысканиям?", options: ["1 год", "5 лет", "75 лет", "10 лет"], correct: 2, explanation: "75 лет (приказы о взысканиях)." },
+          { text: "Срок хранения графиков отпусков?", options: ["1 год", "3 года", "5 лет", "75 лет"], correct: 2, explanation: "5 лет." },
+          { text: "Срок хранения табелей учёта рабочего времени (Т-12, Т-13)?", options: ["1 год", "5 лет", "75 лет", "10 лет"], correct: 1, explanation: "5 лет." },
+          { text: "Срок хранения заявлений работников?", options: ["1 год", "5 лет", "75 лет", "Не хранят"], correct: 2, explanation: "75 лет (в составе личного дела)." },
+          { text: "Срок хранения трудовых книжек после увольнения?", options: ["5 лет", "50 лет", "75 лет", "10 лет"], correct: 1, explanation: "50 лет." },
+          { text: "Кто утверждает Перечень документов с указанием сроков хранения?", options: ["Минтруд", "Росархив", "ФНС", "Правительство РФ напрямую"], correct: 1, explanation: "Приказ Росархива № 236 от 20.12.2019." }
+        ]
+      },
+      {
+        id: "penalties",
+        icon: "⚖️",
+        color: "#e74c3c",
+        title: "Штрафы и санкции",
+        desc: "КоАП, ответственность работодателя и должностных лиц",
+        questions: [
+          { text: "Штраф должностным лицам за нарушение ТК (ст. 5.27 ч. 1)?", options: ["1 000–5 000 руб.", "10 000–20 000 руб.", "50 000–100 000 руб.", "Предупреждение только"], correct: 0, explanation: "Ст. 5.27 ч. 1 КоАП РФ." },
+          { text: "Штраф юрлицу за допуск без договора (ст. 5.27 ч. 4)?", options: ["5 000–10 000", "50 000–100 000", "100 000–200 000", "1 000–5 000"], correct: 1, explanation: "Ст. 5.27 ч. 4 КоАП РФ." },
+          { text: "Штраф за нарушение сроков зарплаты (ст. 5.27 ч. 6) — юрлицо?", options: ["1 000–5 000", "20 000–40 000", "50 000–100 000", "100 000–200 000"], correct: 1, explanation: "Ст. 5.27 ч. 6 КоАП РФ." },
+          { text: "Штраф за нарушение ПДн (ст. 13.11 ч. 2) — должностное лицо?", options: ["1 000–3 000", "30 000–50 000 или дисквалификация до 3 лет", "10 000", "Предупреждение"], correct: 1, explanation: "Ст. 13.11 ч. 2 КоАП РФ." },
+          { text: "Штраф за необеспечение воинского учёта (ст. 21.4 КоАП)?", options: ["Нет штрафа", "1 000–5 000 (должн. лица), 10 000–20 000 (ИП), 100 000–200 000 (юрлица)", "500 руб.", "Только уголовная"], correct: 1, explanation: "Ст. 21.4 КоАП РФ." },
+          { text: "Штраф за непредставление сведений в СФР (ст. 15.33 ч. 1)?", options: ["300–500 руб.", "300–500 (должн.), 5 000–10 000 (юрлица)", "50 000", "Нет"], correct: 1, explanation: "Ст. 15.33 КоАП РФ (ранее 15.33 — отчётность в ПФР)." },
+          { text: "Повторное нарушение ТК должностным лицом (ст. 5.27 ч. 2)?", options: ["Предупреждение", "10 000–20 000 или дисквалификация 1–3 года", "1 000 руб.", "Нет ответственности"], correct: 1, explanation: "Ст. 5.27 ч. 2 КоАП РФ." },
+          { text: "Штраф за нарушение труд. прав иностранцев (ст. 18.10)?", options: ["1 000–5 000", "25 000–50 000 (должн.), 400 000–1 000 000 (юрлица)", "10 000", "Нет"], correct: 1, explanation: "Ст. 18.10 КоАП РФ." },
+          { text: "Материальная ответственность за задержку зарплаты?", options: ["Нет", "Да, проценты по ст. 236 ТК РФ", "Только штраф КоАП", "Только моральный вред"], correct: 1, explanation: "Ст. 236 ТК РФ: не менее 1/150 ключевой ставки ЦБ за каждый день просрочки." },
+          { text: "Дисквалификация — что это?", options: ["Увольнение", "Запрет занимать должности 1–3 года (КоАП)", "Штраф 1000 руб.", "Лишение свободы"], correct: 1, explanation: "Дисквалификация — административное наказание по КоАП РФ." }
+        ]
+      },
+      {
+        id: "military",
+        icon: "🎖️",
+        color: "#2ecc71",
+        title: "Воинский учёт",
+        desc: "Документы, сроки, карточки, ответственность",
+        questions: [
+          { text: "Какой закон регулирует воинский учёт в организациях?", options: ["ТК РФ", "ФЗ № 53-ФЗ «О воинской обязанности и военной службе»", "КоАП", "ФЗ № 152-ФЗ"], correct: 1, explanation: "ФЗ от 26.02.1997 № 53-ФЗ, гл. VIII." },
+          { text: "Кто обязан вести воинский учёт в организации?", options: ["Только HR", "Работодатели (организации и ИП с работниками)", "Только госсектор", "Военкомат"], correct: 1, explanation: "Ст. 8 ФЗ № 53-ФЗ: работодатели обязаны вести учёт." },
+          { text: "Срок сообщения в военкомат о принятии/увольнении работника?", options: ["3 дня", "2 недели", "1 месяц", "5 дней"], correct: 1, explanation: "Постановление Правительства № 719: в течение 2 недель." },
+          { text: "Какая карточка ведётся на каждого работника — военнообязанного?", options: ["Форма 6", "Форма 10 (учётная карточка)", "Форма 2", "Форма 18"], correct: 1, explanation: "Учётная карточка — форма № 10." },
+          { text: "Какая форма — список работников, подлежащих постановке на учёт?", options: ["Форма 10", "Форма 18", "Форма 11", "Форма 6"], correct: 1, explanation: "Список — форма № 18." },
+          { text: "Кто назначается ответственным за воинский учёт?", options: ["Директор лично всегда", "Руководитель назначает приказом ответственного (часто HR)", "Военкомат", "Не назначается"], correct: 1, explanation: "Приказом назначается ответственное лицо за ведение учёта." },
+          { text: "Обязан ли работодатель проверять документы воинского учёта при приёме?", options: ["Нет", "Да, военный билет/приписное — для военнообязанных", "Только для мужчин старше 40", "Только в военное время"], correct: 1, explanation: "Ст. 8 ФЗ № 53-ФЗ: учёт военнообязанных и призывников." },
+          { text: "Срок хранения документов воинского учёта?", options: ["1 год", "5 лет", "50 лет (карточки — постоянно до снятия с учёта)", "75 лет"], correct: 2, explanation: "Правила ведения: карточки хранятся постоянно, пока работник на учёте." },
+          { text: "Штраф за неисполнение обязанностей по воинскому учёту (ст. 21.4 КоАП)?", options: ["500 руб.", "1 000–5 000 (должн.), 100 000–200 000 (юрлица)", "Нет", "10 000 только"], correct: 1, explanation: "Ст. 21.4 КоАП РФ." },
+          { text: "Когда работодатель направляет сведения в военкомат при мобилизационной подготовке?", options: ["Никогда", "По запросу военкомата и в установленные сроки (форма 6, 19)", "Раз в год", "Только при увольнении"], correct: 1, explanation: "ФЗ № 53-ФЗ и Постановление № 719: представление сведений по запросу и по перечню." }
+        ]
+      },
+      {
+        id: "szv",
+        icon: "📤",
+        color: "#9b59b6",
+        title: "СЗВ-ТД",
+        desc: "Сведения о трудовой деятельности, сроки, СФР",
+        questions: [
+          { text: "Что такое СЗВ-ТД?", options: ["Справка 2-НДФЛ", "Сведения о трудовой деятельности, передаваемые в СФР", "Заявление на отпуск", "Приказ о приёме"], correct: 1, explanation: "СЗВ-ТД — форма сведений о трудовой деятельности для СФР (ПФР)." },
+          { text: "В какой срок подаётся СЗВ-ТД при приёме на работу?", options: ["1 рабочий день", "Не позднее следующего рабочего дня после приказа", "3 рабочих дня", "5 дней"], correct: 1, explanation: "Ст. 84.1 ТК РФ, правила: следующий рабочий день." },
+          { text: "Когда подаётся СЗВ-ТД при увольнении?", options: ["В течение недели", "Не позднее следующего рабочего дня", "В день увольнения обязательно", "1 месяц"], correct: 1, explanation: "Ст. 84.1 ТК РФ: не позднее следующего рабочего дня после издания приказа." },
+          { text: "Куда передаются сведения СЗВ-ТД?", options: ["ФНС", "СФР (бывш. ПФР)", "ФСС", "Росархив"], correct: 1, explanation: "СФР — Социальный фонд России." },
+          { text: "В каком виде подаётся СЗВ-ТД?", options: ["Только на бумаге", "В электронном виде (через СЭДО / личный кабинет)", "По почте", "Устно"], correct: 1, explanation: "Электронная подача через систему СФР." },
+          { text: "Нужно ли подавать СЗВ-ТД при изменении должности?", options: ["Нет", "Да, при изменении трудовой функции/структурного подразделения", "Только при увольнении", "Раз в год"], correct: 1, explanation: "При изменениях, влияющих на сведения о трудовой деятельности." },
+          { text: "Что заменило подачу отдельных форм СЗВ после 2023 года?", options: ["Ничего", "ЕФС-1 (единая форма сведений) для ряда случаев", "Только 2-НДФЛ", "Т-2"], correct: 1, explanation: "С 2023 г. введена ЕФС-1, объединяющая ряд отчётов в СФР." },
+          { text: "Штраф за непредставление сведений в СФР (ст. 15.33 КоАП)?", options: ["Нет", "300–500 (должн.), 5 000–10 000 (юрлица)", "100 000", "1 000 000"], correct: 1, explanation: "Ст. 15.33 КоАП РФ." },
+          { text: "Обязан ли работодатель уведомить работника о передаче СЗВ-ТД?", options: ["Нет", "Да, не позднее следующего рабочего дня", "Раз в месяц", "По запросу"], correct: 1, explanation: "Ст. 84.1 ТК РФ." },
+          { text: "СЗВ-ТД подаётся при заключении договора по совместительству?", options: ["Нет", "Да, на каждое место работы", "Только на основном месте", "По желанию"], correct: 1, explanation: "Сведения подаются по каждому трудовому договору." }
+        ]
+      }
+    ];
+
+    const KEY_CLASSES = ["key-a", "key-b", "key-c", "key-d"];
+    const KEY_LABELS = ["A", "B", "C", "D"];
+
+    let currentTopic = null;
+    let answers = {};
+
+    const screens = {
+      select: document.getElementById("screenSelect"),
+      quiz: document.getElementById("screenQuiz"),
+      result: document.getElementById("screenResult")
+    };
+
+    function showScreen(name) {
+      Object.values(screens).forEach(s => s.classList.remove("active"));
+      screens[name].classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderTopicGrid() {
+      const grid = document.getElementById("topicsGrid");
+      grid.innerHTML = sections.map(sec => `
+        <div class="topic-card" data-id="${sec.id}">
+          <div class="topic-card-icon" style="background:${sec.color}22">${sec.icon}</div>
+          <h3>${sec.title}</h3>
+          <p>${sec.desc}</p>
+          <div class="topic-card-meta">10 вопросов</div>
+        </div>
+      `).join("");
+
+      grid.querySelectorAll(".topic-card").forEach(card => {
+        card.addEventListener("click", () => startTopic(card.dataset.id));
+      });
+    }
+
+    function startTopic(id) {
+      currentTopic = sections.find(s => s.id === id);
+      answers = {};
+      document.getElementById("quizIcon").textContent = currentTopic.icon;
+      document.getElementById("quizTopicName").textContent = currentTopic.title;
+      renderQuestions();
+      updateProgress();
+      document.getElementById("finishBtn").disabled = true;
+      showScreen("quiz");
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById("quizQuestions");
+      container.innerHTML = currentTopic.questions.map((q, qi) => {
+        const qId = `${currentTopic.id}-${qi}`;
+        const optionsHtml = q.options.map((opt, oi) => `
+          <div class="option" data-qid="${qId}" data-oi="${oi}">
+            <span class="key ${KEY_CLASSES[oi]}">${KEY_LABELS[oi]}</span>
+            <span class="option-text">${opt}</span>
+          </div>
+        `).join("");
+        return `
+          <div class="question-card" data-qid="${qId}">
+            <div class="q-number">Вопрос ${qi + 1} из 10</div>
+            <div class="q-text">${q.text}</div>
+            <div class="options">${optionsHtml}</div>
+            <div class="explanation" id="exp-${qId}">${q.explanation}</div>
+          </div>
+        `;
+      }).join("");
+
+      Object.entries(answers).forEach(([qId, sel]) => {
+        const qi = parseInt(qId.split("-").pop(), 10);
+        applyAnswerVisuals(qId, currentTopic.questions[qi], sel);
+      });
+    }
+
+    function applyAnswerVisuals(qId, question, selectedIndex) {
+      const card = document.querySelector(`.question-card[data-qid="${qId}"]`);
+      if (!card) return;
+      card.querySelectorAll(".option").forEach((opt, oi) => {
+        opt.classList.add("disabled");
+        if (oi === question.correct) opt.classList.add("correct");
+        if (oi === selectedIndex && selectedIndex !== question.correct) opt.classList.add("wrong");
+        if (oi === selectedIndex) opt.classList.add("selected");
+      });
+      const exp = document.getElementById(`exp-${qId}`);
+      if (exp) exp.classList.add("show");
+      card.classList.add(selectedIndex === question.correct ? "answered-correct" : "answered-wrong");
+    }
+
+    function selectAnswer(qId, optionIndex) {
+      if (answers[qId] !== undefined) return;
+      const qi = parseInt(qId.split("-").pop(), 10);
+      const question = currentTopic.questions[qi];
+      answers[qId] = optionIndex;
+      applyAnswerVisuals(qId, question, optionIndex);
+      updateProgress();
+      if (Object.keys(answers).length === 10) {
+        document.getElementById("finishBtn").disabled = false;
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(answers).length;
+      let correct = 0;
+      Object.entries(answers).forEach(([qId, ans]) => {
+        const qi = parseInt(qId.split("-").pop(), 10);
+        if (currentTopic.questions[qi].correct === ans) correct++;
+      });
+      document.getElementById("progressFill").style.width = (answered / 10 * 100) + "%";
+      document.getElementById("progressText").textContent = `Отвечено: ${answered} из 10`;
+      document.getElementById("scoreText").textContent = `Верно: ${correct}`;
+    }
+
+    function showResults() {
+      let correct = 0;
+      const wrongItems = [];
+
+      currentTopic.questions.forEach((q, qi) => {
+        const qId = `${currentTopic.id}-${qi}`;
+        const ans = answers[qId];
+        if (ans === q.correct) {
+          correct++;
+        } else if (ans !== undefined) {
+          wrongItems.push({ num: qi + 1, text: q.text, correct: q.options[q.correct] });
+        }
+      });
+
+      const pct = Math.round(correct / 10 * 100);
+      const circle = document.getElementById("scoreCircle");
+      circle.className = "score-circle";
+      document.getElementById("scorePct").textContent = pct + "%";
+      document.getElementById("scoreFraction").textContent = `${correct} / 10`;
+
+      if (pct >= 90) {
+        circle.classList.add("excellent");
+        document.getElementById("resultTitle").textContent = "Отлично!";
+        document.getElementById("resultDesc").textContent = `Тема «${currentTopic.title}» освоена на высоком уровне. Верных ответов: ${correct} из 10.`;
+      } else if (pct >= 70) {
+        circle.classList.add("good");
+        document.getElementById("resultTitle").textContent = "Хороший результат";
+        document.getElementById("resultDesc").textContent = `Верных ответов: ${correct} из 10. Рекомендуем повторить вопросы с ошибками.`;
+      } else if (pct >= 50) {
+        circle.classList.add("weak");
+        document.getElementById("resultTitle").textContent = "Удовлетворительно";
+        document.getElementById("resultDesc").textContent = `Верных ответов: ${correct} из 10. Необходимо повторить материал по теме «${currentTopic.title}».`;
+      } else {
+        circle.classList.add("fail");
+        document.getElementById("resultTitle").textContent = "Нужно изучить тему";
+        document.getElementById("resultDesc").textContent = `Верных ответов: ${correct} из 10. Пройдите тему повторно после изучения нормативной базы.`;
+      }
+
+      document.getElementById("resultDetails").innerHTML = `
+        <div class="result-detail-item">
+          <div class="label">Тема</div>
+          <div class="value">${currentTopic.icon} ${currentTopic.title}</div>
+        </div>
+        <div class="result-detail-item">
+          <div class="label">Верных ответов</div>
+          <div class="value" style="color:var(--success)">${correct}</div>
+        </div>
+        <div class="result-detail-item">
+          <div class="label">Ошибок</div>
+          <div class="value" style="color:var(--error)">${10 - correct}</div>
+        </div>
+        <div class="result-detail-item">
+          <div class="label">Процент</div>
+          <div class="value">${pct}%</div>
+        </div>
+      `;
+
+      const wrongList = document.getElementById("wrongList");
+      if (wrongItems.length) {
+        wrongList.innerHTML = `
+          <h3>Вопросы с ошибками (${wrongItems.length})</h3>
+          ${wrongItems.map(w => `
+            <div class="wrong-item">
+              <strong>Вопрос ${w.num}:</strong> ${w.text}
+              <div class="correct-ans">✓ Правильный ответ: ${w.correct}</div>
+            </div>
+          `).join("")}
+        `;
+        wrongList.style.display = "block";
+      } else {
+        wrongList.innerHTML = "";
+        wrongList.style.display = "none";
+      }
+
+      showScreen("result");
+    }
+
+    document.getElementById("quizQuestions").addEventListener("click", e => {
+      const opt = e.target.closest(".option");
+      if (opt && !opt.classList.contains("disabled")) {
+        selectAnswer(opt.dataset.qid, parseInt(opt.dataset.oi, 10));
+      }
+    });
+
+    document.addEventListener("keydown", e => {
+      if (!screens.quiz.classList.contains("active")) return;
+      const keyMap = { a: 0, b: 1, c: 2, d: 3, "1": 0, "2": 1, "3": 2, "4": 3 };
+      const ki = keyMap[e.key.toLowerCase()];
+      if (ki === undefined) return;
+      const card = [...document.querySelectorAll(".question-card")].find(c => answers[c.dataset.qid] === undefined);
+      if (card) selectAnswer(card.dataset.qid, ki);
+    });
+
+    document.getElementById("finishBtn").addEventListener("click", showResults);
+    document.getElementById("backToTopics").addEventListener("click", () => {
+      if (Object.keys(answers).length && !confirm("Прогресс будет потерян. Вернуться к выбору темы?")) return;
+      showScreen("select");
+    });
+    document.getElementById("retryTopic").addEventListener("click", () => startTopic(currentTopic.id));
+    document.getElementById("chooseTopic").addEventListener("click", () => showScreen("select"));
+
+    renderTopicGrid();
+  </script>
+</body>
+</html>
