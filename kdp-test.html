@@ -6,26 +6,29 @@
   <title>Тест HR: Кадровое делопроизводство (КДП)</title>
   <style>
     :root {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --surface2: #243044;
-      --text: #e8edf4;
-      --muted: #8b9cb3;
-      --accent: #4f8cff;
-      --success: #2ecc71;
-      --error: #e74c3c;
-      --warning: #f39c12;
+      --bg: #e8f5e9;
+      --surface: #ffffff;
+      --surface2: #f1f8e9;
+      --text: #1b3a1f;
+      --muted: #5a7a5e;
+      --accent: #2e7d32;
+      --accent-light: #43a047;
+      --success: #1b8a3e;
+      --error: #c62828;
+      --warning: #e65100;
       --key-a: #ff6b6b;
       --key-b: #ffd93d;
       --key-c: #6bcb77;
       --key-d: #4d96ff;
+      --border: rgba(46, 125, 50, 0.15);
+      --shadow: rgba(46, 125, 50, 0.12);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      background: var(--bg);
+      background: linear-gradient(160deg, #e8f5e9 0%, #f1f8e9 50%, #dcedc8 100%);
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
@@ -41,15 +44,16 @@
       text-align: center;
       margin-bottom: 28px;
       padding: 28px 20px;
-      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
       border-radius: 16px;
-      border: 1px solid rgba(79, 140, 255, 0.2);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px var(--shadow);
     }
 
     header h1 {
       font-size: 1.7rem;
       margin-bottom: 8px;
-      background: linear-gradient(90deg, #4f8cff, #6bcb77);
+      background: linear-gradient(90deg, #1b5e20, #2e7d32);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -60,7 +64,6 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* Выбор темы */
     .topic-select-intro {
       text-align: center;
       margin-bottom: 24px;
@@ -76,18 +79,20 @@
 
     .topic-card {
       background: var(--surface);
-      border: 2px solid rgba(255,255,255,0.06);
+      border: 2px solid var(--border);
       border-radius: 14px;
       padding: 18px;
       cursor: pointer;
       transition: all 0.2s;
       text-align: left;
+      box-shadow: 0 2px 8px var(--shadow);
     }
 
     .topic-card:hover {
       border-color: var(--accent);
       transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(79, 140, 255, 0.15);
+      box-shadow: 0 8px 24px var(--shadow);
+      background: #fafffa;
     }
 
     .topic-card-icon {
@@ -104,6 +109,7 @@
     .topic-card h3 {
       font-size: 1rem;
       margin-bottom: 6px;
+      color: var(--text);
     }
 
     .topic-card p {
@@ -118,7 +124,6 @@
       font-weight: 600;
     }
 
-    /* Прогресс */
     .quiz-header {
       display: flex;
       align-items: center;
@@ -129,7 +134,8 @@
       padding: 14px 18px;
       background: var(--surface);
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px var(--shadow);
     }
 
     .quiz-header .topic-name {
@@ -142,15 +148,18 @@
     .btn-back {
       padding: 8px 16px;
       background: var(--surface2);
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--muted);
       font-size: 0.85rem;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: all 0.2s;
     }
 
-    .btn-back:hover { color: var(--text); }
+    .btn-back:hover {
+      color: var(--accent);
+      background: #dcedc8;
+    }
 
     .progress-wrap { margin-bottom: 20px; }
 
@@ -164,14 +173,14 @@
 
     .progress-bar {
       height: 6px;
-      background: var(--surface2);
+      background: #c8e6c9;
       border-radius: 3px;
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--success));
+      background: linear-gradient(90deg, var(--accent-light), var(--success));
       border-radius: 3px;
       transition: width 0.4s ease;
       width: 0%;
@@ -185,6 +194,7 @@
       border-radius: 12px;
       font-size: 0.85rem;
       color: var(--muted);
+      border: 1px solid var(--border);
     }
 
     .keys-demo {
@@ -199,12 +209,13 @@
       border-radius: 14px;
       padding: 20px;
       margin-bottom: 14px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
       transition: border-color 0.3s;
+      box-shadow: 0 2px 8px var(--shadow);
     }
 
-    .question-card.answered-correct { border-color: rgba(46, 204, 113, 0.4); }
-    .question-card.answered-wrong { border-color: rgba(231, 76, 60, 0.4); }
+    .question-card.answered-correct { border-color: rgba(27, 138, 62, 0.5); background: #f1faf3; }
+    .question-card.answered-wrong { border-color: rgba(198, 40, 40, 0.4); background: #fff8f8; }
 
     .q-number {
       font-size: 0.75rem;
@@ -237,13 +248,13 @@
     }
 
     .option:hover:not(.disabled) {
-      background: #2d3d54;
+      background: #dcedc8;
       transform: translateX(4px);
     }
 
-    .option.selected { border-color: var(--accent); }
-    .option.correct { border-color: var(--success); background: rgba(46,204,113,0.12); }
-    .option.wrong { border-color: var(--error); background: rgba(231,76,60,0.12); }
+    .option.selected { border-color: var(--accent); background: #e8f5e9; }
+    .option.correct { border-color: var(--success); background: rgba(27, 138, 62, 0.12); }
+    .option.wrong { border-color: var(--error); background: rgba(198, 40, 40, 0.08); }
     .option.disabled { cursor: default; }
 
     .key {
@@ -256,7 +267,7 @@
       font-weight: 700;
       font-size: 0.85rem;
       flex-shrink: 0;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4);
       color: #1a1a1a;
     }
 
@@ -270,7 +281,7 @@
     .explanation {
       margin-top: 14px;
       padding: 12px 14px;
-      background: rgba(79, 140, 255, 0.1);
+      background: rgba(46, 125, 50, 0.08);
       border-left: 3px solid var(--accent);
       border-radius: 0 8px 8px 0;
       font-size: 0.85rem;
@@ -301,9 +312,9 @@
     button:hover { transform: translateY(-2px); }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #3a6fd9);
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
       color: white;
-      box-shadow: 0 4px 16px rgba(79, 140, 255, 0.35);
+      box-shadow: 0 4px 16px var(--shadow);
     }
 
     .btn-primary:disabled {
@@ -313,18 +324,22 @@
     }
 
     .btn-secondary {
-      background: var(--surface2);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
     }
 
-    /* Итоговый результат */
+    .btn-secondary:hover {
+      background: var(--surface2);
+    }
+
     .results {
       text-align: center;
       padding: 36px 24px;
       background: var(--surface);
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px var(--shadow);
     }
 
     .score-circle {
@@ -337,6 +352,7 @@
       align-items: center;
       justify-content: center;
       border: 6px solid var(--accent);
+      background: var(--surface2);
     }
 
     .score-circle .pct { font-size: 2.4rem; font-weight: 700; line-height: 1; }
@@ -361,6 +377,7 @@
       padding: 14px;
       background: var(--surface2);
       border-radius: 10px;
+      border: 1px solid var(--border);
     }
 
     .result-detail-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
@@ -379,7 +396,7 @@
 
     .wrong-item {
       padding: 12px;
-      background: rgba(231,76,60,0.08);
+      background: rgba(198, 40, 40, 0.06);
       border-radius: 10px;
       margin-bottom: 8px;
       font-size: 0.85rem;
